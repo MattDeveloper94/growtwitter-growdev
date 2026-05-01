@@ -1,8 +1,46 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  schemas  = ["db_growtwitter_schemas"]
+}
+
+model Usuario {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nome         String   @db.VarChar(80)
+  username     String   @unique @db.VarChar(120)
+  email        String   @unique @db.VarChar(60)
+  senha        String
+  dtNascimento DateTime @map("dt_nascimento") @db.Date
+
+  dtCriacao DateTime @default(now()) @map("dt_criacao")
+  dtUpdate  DateTime @updatedAt @map("dt_update")
+
+  @@map("usuario")
+  @@schema("db_growtwitter_schemas")
+}
+
+model Tweet {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  conteudo String @db.VarChar(280)
+
+  dtCriacao DateTime @default(now()) @map("dt_criacao")
+  dtUpdate  DateTime @updatedAt @map("dt_update")
+
+  @@map("tweet")
+  @@schema("db_growtwitter_schemas")
+}
+
+model Follow {
+  followerId  String @map("follower_id") @db.Uuid
+  followingId String @map("following_id") @db.Uuid
+
+  dtCriacao DateTime @default(now()) @map("dt_criacao")
+  dtUpdate  DateTime @updatedAt @map("dt_update")
+
+  @@id([followerId, followingId])
+  @@map("follow")
+  @@schema("db_growtwitter_schemas")
 }
