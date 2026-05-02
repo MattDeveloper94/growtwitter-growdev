@@ -23,6 +23,7 @@ model Usuario {
   following Follow[] @relation("quemMeSegue")
 
   tweets Tweet[] @relation("usuarioTweets")
+  likes  Like[]  @relation("usuarioQueCurtiu")
 
   @@map("usuario")
   @@schema("db_growtwitter_schemas")
@@ -37,17 +38,19 @@ model Tweet {
   dtUpdate  DateTime @updatedAt @map("dt_update")
 
   //auto-relacionamento
-  
+
   //guarda o id do tweet pai referenciado
-  replyId String? @map("reply_id") @db.Uuid 
+  replyId String? @map("reply_id") @db.Uuid
   // tweet pai que este tweet está respondendo
   replyTo Tweet?  @relation("tweetReplies", fields: [replyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  
+
   // apontando a relacao | replies representa uma lista de tweets "filhos"
   replies Tweet[] @relation("tweetReplies")
 
   usuarioId String  @map("usuario_id") @db.Uuid
   usuario   Usuario @relation("usuarioTweets", fields: [usuarioId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  likes Like[] @relation("tweetCurtido")
 
   @@map("tweet")
   @@schema("db_growtwitter_schemas")
@@ -66,5 +69,21 @@ model Follow {
 
   @@id([followerId, followingId]) // chave composta - unica
   @@map("follow")
+  @@schema("db_growtwitter_schemas")
+}
+
+//tabela associativa/junção
+model Like {
+  usuarioId String @map("usuario_id") @db.Uuid //quemcurtiu
+  tweetId   String @map("tweet_id") @db.Uuid //tweetcurtidao
+
+  dtCriacao DateTime @default(now()) @map("dt_criacao")
+  dtUpdate  DateTime @updatedAt @map("dt_update")
+
+  usuario Usuario @relation("usuarioQueCurtiu", fields: [usuarioId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  tweet   Tweet   @relation("tweetCurtido", fields: [tweetId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@id([usuarioId, tweetId])
+  @@map("like")
   @@schema("db_growtwitter_schemas")
 }
