@@ -62,7 +62,7 @@ export class UsuarioService {
             throw new Error(`E-mail inválido.`)
 
         //criando usuario
-        const usuarioCriado = await usuarioRepository.CreateUsuario(dados);
+        const usuarioCriado = await usuarioRepository.createUsuario(dados);
 
         //removendo senha do usuario pra log
         const { senha, ...usuarioSemSenha } = usuarioCriado;

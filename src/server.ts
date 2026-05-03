@@ -2,6 +2,7 @@ import express from "express";
 import { handleError } from "./middlewares/error.handler";
 import tweetRouter from "./modules/routes/tweet.routes";
 import usuarioRouter from "./modules/routes/usuario.routes";
+import toggleLikeRouter from "./modules/routes/like.routes";
 
 import cors from "cors";
 const app = express();
@@ -10,6 +11,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/api", tweetRouter);
 app.use("/api", usuarioRouter);
+app.use("/api", toggleLikeRouter);
 
 //rota
 app.get("/", (req, res) => {
