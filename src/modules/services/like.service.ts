@@ -12,16 +12,6 @@ export class LikeService {
 
         const searchLike = await likeRepository.searchLike(usuarioId, tweetId);
 
-        if (!searchLike) {
-            const createLike = await likeRepository.createLike(usuarioId, tweetId);
-            console.log('✅ Liked!', createLike);
-
-            return {
-                ok: true,
-                createLike
-            }
-        }
-
         if (searchLike) {
             const deleteLike = await likeRepository.deleteLike(usuarioId, tweetId);
             console.log('✅ Deslike!', deleteLike);
@@ -30,6 +20,14 @@ export class LikeService {
                 ok: true,
                 deleteLike
             }
+        }
+
+        const createLike = await likeRepository.createLike(usuarioId, tweetId);
+        console.log('✅ Liked!', createLike);
+
+        return {
+            ok: true,
+            createLike
         }
     }
 }
