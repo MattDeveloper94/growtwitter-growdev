@@ -7,7 +7,6 @@ datasource db {
   schemas  = ["db_growtwitter_schemas"]
 }
 
-// 1 - N
 model Usuario {
   id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   nome         String   @db.VarChar(80)
@@ -29,7 +28,6 @@ model Usuario {
   @@schema("db_growtwitter_schemas")
 }
 
-// 1 - N | auto-relacionamento
 model Tweet {
   id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   conteudo String @db.VarChar(280)
@@ -56,7 +54,6 @@ model Tweet {
   @@schema("db_growtwitter_schemas")
 }
 
-// N - N
 model Follow {
   followerId  String @map("follower_id") @db.Uuid //seguir
   followingId String @map("following_id") @db.Uuid // seguindo
