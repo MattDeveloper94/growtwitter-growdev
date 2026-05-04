@@ -14,5 +14,6 @@ Aplicação inspirada no Twitter desenvolvida durante o curso de Formação em D
 -     PostgreSQL
 -     Prisma ORM
 -     JWT Authentication
+-     Teste Jest - Supertest 
 
 ---

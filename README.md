@@ -15,6 +15,7 @@ Aplicação inspirada no Twitter desenvolvida durante o curso de Formação em D
 -     Prisma ORM
 -     Docker
 -     JWT Authentication
+-     Testes automatizados com Jest e Supertest
 
 ---
 
@@ -57,8 +58,20 @@ A aplicação utiliza JWT (JSON Web Token) para autenticação e proteção de r
 -     Like tweet ✅ concluído
 -     Follow/Unfollow ✅ concluído
 -     Autenticação com JWT ✅ concluído
--     Sistema de Teste ⏳ em desenvolvimento
+-     Sistema de Testes automatizados ✅ concluído
 -     Docker ✅ concluído
+
+---
+
+### 🧪 Testes automatizados
+
+O projeto possui testes utilizando Jest e Supertest.
+
+Para rodar os testes:
+
+```bash
+npm test
+```
 
 ---
 
