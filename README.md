@@ -86,6 +86,48 @@ POST /follows/:id
 
 ## ⚙️ Como rodar o projeto
 
+### 🔑 Pré-requisitos
+
+* Node.js instalado
+* Docker instalado
+* Banco PostgreSQL (ex: Neon)
+
+---
+
+### 🔑 Configuração do ambiente
+
+Crie um arquivo `.env` baseado no `.env.example`:
+
+**Linux/Mac:**
+
+```bash
+cp .env.example .env
+```
+
+**Windows:**
+
+* copie o arquivo `.env.example`
+* renomeie para `.env`
+
+Depois preencha:
+
+```env
+DATABASE_URL="sua_url_do_postgresql"
+JWT_SECRET="seu_segredo"
+```
+
+---
+
+### 🗄️ Configurar o banco de dados
+
+Execute as migrations para criar as tabelas no banco:
+
+```bash
+npx prisma migrate dev
+```
+
+---
+
 ### 💻 Rodando localmente
 
 ```bash
@@ -111,7 +153,6 @@ http://localhost:3000
 ### 🐳 Rodando com Docker
 
 ```bash
-# subir container
 docker compose up --build
 ```
 
@@ -129,15 +170,22 @@ docker compose down
 
 ---
 
-### 🔑 Variáveis de ambiente
+### 🧪 Testando a API
 
-Crie um arquivo `.env` baseado no `.env.example`:
+Utilize o Postman ou outra ferramenta para testar as rotas.
 
-**Linux/Mac:**
+#### 🔐 Login
 
-```bash
-cp .env.example .env
-```
+POST /api/auth/login
+
+Após o login, copie o token retornado.
+
+#### 🔒 Rotas protegidas
+
+Envie o token no header:
+
+Authorization: Bearer TOKEN
+
 
 **Windows:**
 
