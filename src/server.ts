@@ -14,6 +14,7 @@ app.use("/api", tweetRouter);
 app.use("/api", usuarioRouter);
 app.use("/api", toggleLikeRouter);
 app.use("/api", toggleFollowRouter);
+
 //rota
 app.get("/", (req, res) => {
     res.send("API rodando!");

@@ -1,7 +1,9 @@
 import { Router } from "express";
 import { LikeController } from "../controllers/like.controller";
+import { TweetController } from "../controllers/tweet.controller";
 
 const likeController = new LikeController();
+const tweetController = new TweetController();
 const router = Router();
 
 // API - toggle Like

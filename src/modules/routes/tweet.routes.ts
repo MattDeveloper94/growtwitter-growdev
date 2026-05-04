@@ -16,4 +16,26 @@ router.post("/tweets", async (req, res) => {
     }
 });
 
+router.put("/tweets/:id", async (req, res) => {
+    try {
+        await tweetController.updateTweet(req, res)
+    } catch (error: any) {
+        res.status(400).send({
+            ok: false,
+            message: error.message
+        });
+    }
+});
+
+router.delete("/tweets/:id", async (req, res) => {
+    try {
+        await tweetController.deleteTweet(req, res)
+    } catch (error: any) {
+        res.status(400).send({
+            ok: false,
+            message: error.message
+        });
+    }
+});
+
 export default router

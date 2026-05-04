@@ -29,7 +29,7 @@ model Usuario {
 }
 
 model Tweet {
-  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tweetId  String @id @default(dbgenerated("gen_random_uuid()")) @map("tweet_id") @db.Uuid
   conteudo String @db.VarChar(280)
 
   dtCriacao DateTime @default(now()) @map("dt_criacao")
@@ -40,7 +40,7 @@ model Tweet {
   //guarda o id do tweet pai referenciado
   replyId String? @map("reply_id") @db.Uuid
   // tweet pai que este tweet está respondendo
-  replyTo Tweet?  @relation("tweetReplies", fields: [replyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  replyTo Tweet?  @relation("tweetReplies", fields: [replyId], references: [tweetId], onDelete: Cascade, onUpdate: Cascade)
 
   // apontando a relacao | replies representa uma lista de tweets "filhos"
   replies Tweet[] @relation("tweetReplies")
@@ -78,7 +78,7 @@ model Like {
   dtUpdate  DateTime @updatedAt @map("dt_update")
 
   usuario Usuario @relation("usuarioQueCurtiu", fields: [usuarioId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  tweet   Tweet   @relation("tweetCurtido", fields: [tweetId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  tweet   Tweet   @relation("tweetCurtido", fields: [tweetId], references: [tweetId], onDelete: Cascade, onUpdate: Cascade)
 
   @@id([usuarioId, tweetId])
   @@map("like")
