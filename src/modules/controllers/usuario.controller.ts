@@ -7,6 +7,7 @@ const usuarioService = new UsuarioService();
 export class UsuarioController {
     public async create(req: Request<any, any, CreateUsuarioDto>, res: Response) {
         const { nome, username, email, senha, dtNascimento } = req.body;
+        
         const result = await usuarioService.createUsuario({
             nome,
             username,

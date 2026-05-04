@@ -5,8 +5,8 @@ import { FollowService } from "../services/follow.service";
 const followService = new FollowService();
 
 export class FollowController {
-    async toggleFollow(req: Request<{id: string}, any, CreateTweetDto>, res: Response) {
-        const followerId = req.body.usuarioId;
+    async toggleFollow(req: Request<{ id: string }, any, CreateTweetDto>, res: Response) {
+        const followerId = req.usuario!.id;
         const followingId = req.params.id;
 
         if (!followingId)

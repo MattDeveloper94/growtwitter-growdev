@@ -6,7 +6,7 @@ const likeService = new LikeService();
 
 export class LikeController {
     async toggleLike(req: Request<{ id: string }, any, CreateTweetDto>, res: Response) {
-        const usuarioId = req.body.usuarioId;
+        const usuarioId = req.usuario!.id;
         const tweetId = req.params.id // id que vai vir pela rota - url
 
         if (!tweetId)

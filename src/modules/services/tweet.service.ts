@@ -39,7 +39,7 @@ export class TweeetService {
         if (!tweet)
             throw new Error('Tweet nao encontrado!');
 
-        if (tweet.tweetObtido?.usuarioId != usuarioLogadoId)
+        if (tweet.tweetObtido?.usuarioId !== usuarioLogadoId)
             throw new Error('Você nao tem permissao para deletar esse tweet!');
 
         //deletando tweet
@@ -89,11 +89,19 @@ export class TweeetService {
             throw new Error('TweetID nao encontrado!');
 
         const tweetObtido = await tweetRepository.obterPorId(tweetId)
-
         console.log('✅ Tweet encontrado:', tweetObtido);
         return {
             ok: true,
             tweetObtido
+        }
+    }
+
+    async listarTodosTweets(usuarioLogado: string) {
+        const tweetsObtidos = await tweetRepository.listarTodosTweets(usuarioLogado)
+        console.log('✅ Tweets encontrados:', tweetsObtidos);
+        return {
+            ok: true,
+            tweetsObtidos
         }
     }
 }

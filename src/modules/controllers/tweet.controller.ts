@@ -7,7 +7,7 @@ const tweetService = new TweeetService();
 export class TweetController {
     //                    Request<Params, ResBody, ReqBody> 
     public async create(req: Request<any, any, CreateTweetDto>, res: Response) {
-        const usuarioId = req.body.usuarioId;
+        const usuarioId = req.usuario!.id
         const { conteudo, replyId } = req.body;
 
         const result = await tweetService.createTweet({
@@ -20,7 +20,7 @@ export class TweetController {
     }
 
     public async updateTweet(req: Request<{ id: string }, any, any>, res: Response) {
-        const usuarioId = req.headers.id as string;
+        const usuarioId = req.usuario!.id;
         const tweetId = req.params.id;
         const dados = req.body;
 
@@ -29,10 +29,17 @@ export class TweetController {
     }
 
     public async deleteTweet(req: Request<{ id: string }, any, any>, res: Response) {
-        const usuarioId = req.headers.id as string;
+        const usuarioId = req.usuario!.id;
         const tweetId = req.params.id;
 
         const result = await tweetService.deleteTweet(usuarioId, tweetId);
         res.json(result);
+    }
+
+    public async listarTweets(req: Request<{ id: string }>, res: Response) {
+        const usuarioLogado = req.usuario!.id;
+
+        const result = await tweetService.listarTodosTweets(usuarioLogado);
+        return res.json(result);
     }
 }

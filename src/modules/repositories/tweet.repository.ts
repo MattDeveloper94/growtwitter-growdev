@@ -25,29 +25,27 @@ export class TweetRepository {
 
     // deletar tweet
     public async deletarTweetPorId(id: string) {
-        const tweet = await prisma.tweet.delete({
+        return await prisma.tweet.delete({
             where: {
                 tweetId: id
             }
         });
-        return tweet;
     }
 
 
     // atualizar tweet
     public async updateTweet(id: string, dados: UpdateTweetDto) {
-        const tweet = await prisma.tweet.update({
+        return await prisma.tweet.update({
             where: {
                 tweetId: id
             },
             data: dados
         });
-        return tweet;
     }
 
     // obterporId
     public async obterPorId(id: string) {
-        const tweet = await prisma.tweet.findUnique({
+        return await prisma.tweet.findUnique({
             where: {
                 tweetId: id
             },
@@ -57,7 +55,24 @@ export class TweetRepository {
                 conteudo: true,
             }
         });
-        return tweet;
     }
 
+    public async listarTodosTweets(usuarioLogado: string) {
+        return await prisma.tweet.findMany({
+            where: {
+                usuarioId: usuarioLogado
+            },
+            include: {
+                usuario: {
+                    select: {
+                        nome: true,
+                        username: true
+                    }
+                }
+            },
+            orderBy: {
+                dtCriacao: "desc"
+            }
+        });
+    }
 }
