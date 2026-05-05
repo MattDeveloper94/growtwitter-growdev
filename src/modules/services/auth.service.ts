@@ -10,18 +10,19 @@ export class AuthService {
         //validacao email
         const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        let usuario;
-
         if (!dados.login || !dados.senha)
             throw new Error("Login e senha são obrigatórios.");
 
-        if (emailValido.test(dados.login)) {
-            usuario = await usuarioRepository.obterPorEmail(dados.login.trim().toLowerCase());
-        } else
-            usuario = await usuarioRepository.obterPorUsername(dados.login.trim().toLowerCase());
+        //operador ternário
+        const usuario = emailValido.test(dados.login)
+            ? await usuarioRepository.obterPorEmail(dados.login) // email
+            : await usuarioRepository.obterPorUsername(dados.login); // username
 
         //validando usuario;
-        if (!usuario || usuario.senha !== dados.senha)
+        if (!usuario)
+            throw new Error('Você precisa informar o usuario no campo login!');
+
+        if (usuario.senha !== dados.senha)
             throw new Error('Login ou senha inválidos!');
 
         //CRIANDO TOKEN - JWT

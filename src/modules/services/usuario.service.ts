@@ -27,7 +27,8 @@ export class UsuarioService {
         }
 
         //padrozinacao
-        dados.nome = dados.nome.replace(/[^a-zA-ZÀ-ÿ0-9\s]/g, "")
+        dados.nome = dados.nome
+            .replace(/[^a-zA-ZÀ-ÿ0-9\s]/g, "")
             .trim()
             .toLowerCase()
             .split(" ")
@@ -39,16 +40,12 @@ export class UsuarioService {
             )
             .join(" ");
 
-        dados.username = dados.username.replace(/[^a-zA-ZÀ-ÿ0-9\s]/g, "")
+        dados.username = dados.username
+            .replace(/[^a-zA-ZÀ-ÿ0-9\s]/g, "")
             .trim()
             .toLowerCase()
             .split(" ")
             .filter(Boolean)
-            .map(
-                palavra =>
-                    palavra.charAt(0).toUpperCase() +
-                    palavra.slice(1)
-            )
             .join("");
 
 

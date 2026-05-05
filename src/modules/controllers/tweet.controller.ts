@@ -16,7 +16,7 @@ export class TweetController {
             replyId
         });
 
-        return res.json(result);
+        return res.status(201).json(result);
     }
 
     public async updateTweet(req: Request<{ id: string }, any, any>, res: Response) {
@@ -25,7 +25,7 @@ export class TweetController {
         const dados = req.body;
 
         const result = await tweetService.updateTweet(usuarioId, tweetId, dados);
-        res.json(result);
+        return res.status(200).json(result);
     }
 
     public async deleteTweet(req: Request<{ id: string }, any, any>, res: Response) {
@@ -33,13 +33,13 @@ export class TweetController {
         const tweetId = req.params.id;
 
         const result = await tweetService.deleteTweet(usuarioId, tweetId);
-        res.json(result);
+        return res.status(204).json(result);
     }
 
     public async listarTweets(req: Request<{ id: string }>, res: Response) {
         const usuarioLogado = req.usuario!.id;
 
         const result = await tweetService.listarTodosTweets(usuarioLogado);
-        return res.json(result);
+        return res.status(200).json(result);
     }
 }
