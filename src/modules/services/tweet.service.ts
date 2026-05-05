@@ -25,8 +25,6 @@ export class TweeetService {
         //criando o tweet
         const tweetCriado = await tweetRepository.CreateTweet(dados);
 
-        console.log('✅ Tweet criado:', tweetCriado);
-
         return {
             ok: true,
             tweet: tweetCriado
@@ -45,7 +43,6 @@ export class TweeetService {
         //deletando tweet
         const tweetDeletado = await tweetRepository.deletarTweetPorId(tweetId);
 
-        console.log('✅ Tweet Deletado:', tweetDeletado);
         return {
             ok: true,
             tweet: tweetDeletado
@@ -77,7 +74,7 @@ export class TweeetService {
         }
 
         const tweetAtualizado = await tweetRepository.updateTweet(tweetId, dados)
-        console.log('✅ Tweet atualizado:', tweet);
+
         return {
             ok: true,
             tweetAtualizado
@@ -89,7 +86,7 @@ export class TweeetService {
             throw new Error('TweetID nao encontrado!');
 
         const tweetObtido = await tweetRepository.obterPorId(tweetId)
-        console.log('✅ Tweet encontrado:', tweetObtido);
+
         return {
             ok: true,
             tweetObtido
@@ -98,7 +95,7 @@ export class TweeetService {
 
     async listarTodosTweets(usuarioLogado: string) {
         const tweetsObtidos = await tweetRepository.listarTodosTweets(usuarioLogado)
-        console.log('✅ Tweets encontrados:', tweetsObtidos);
+
         return {
             ok: true,
             tweetsObtidos

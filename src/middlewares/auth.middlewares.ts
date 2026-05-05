@@ -8,6 +8,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         res.status(401).json({
+            ok: false,
             message: "Token inválido."
         });
         return;
@@ -17,6 +18,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
 
     if (!token) {
         res.status(401).json({
+            ok: false,
             message: "Token inválido."
         });
         return;
@@ -33,6 +35,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
         // console.error(error) → exibe o erro real no backend
         console.error(error);
         res.status(401).json({
+            ok: false,
             message: "Token inválido ou expirado." // resposta enviada ao frontend
         });
         return;

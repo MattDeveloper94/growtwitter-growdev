@@ -35,7 +35,6 @@ export class AuthService {
 
         // cria um novo objeto com os dados do usuário, removendo a senha
         const { senha, ...usuarioSemSenha } = usuario;
-        console.log('✅ usuario Logado!', usuarioSemSenha);
         //saída
         return {
             ok: true,

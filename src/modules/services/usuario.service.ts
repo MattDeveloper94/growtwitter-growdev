@@ -64,10 +64,9 @@ export class UsuarioService {
         //removendo senha do usuario pra log
         const { senha, ...usuarioSemSenha } = usuarioCriado;
 
-        console.log('✅ Usuario criado:', usuarioSemSenha);
         return {
             ok: true,
-            usario: usuarioSemSenha
+            usuario: usuarioSemSenha
         }
     }
 }

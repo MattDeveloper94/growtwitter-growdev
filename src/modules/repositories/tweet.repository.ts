@@ -39,7 +39,13 @@ export class TweetRepository {
             where: {
                 tweetId: id
             },
-            data: dados
+            data: dados,
+            select: {
+                tweetId: true,
+                conteudo: true,
+                usuarioId: true,
+                dtUpdate: true
+            }
         });
     }
 

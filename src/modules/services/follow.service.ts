@@ -14,7 +14,6 @@ export class FollowService {
 
         if (searchFollow) {
             const deleteFollow = await followRepository.deleteFollow(followerId, followingId)
-            console.log('✅ Unfollow!', deleteFollow);
 
             return {
                 ok: true,
@@ -23,7 +22,6 @@ export class FollowService {
         }
 
         const createFollow = await followRepository.createFollow(followerId, followingId)
-        console.log('✅ Following!', createFollow);
 
         return {
             ok: true,

@@ -11,6 +11,7 @@ export function handleError(
         console.log(`Erro Prisma [${err.code}]: ${err.message}`);
         
         return res.status(400).json({
+            ok: false,
             message: "Erro no banco de dados",
             code: err.code
         });
@@ -19,6 +20,7 @@ export function handleError(
     console.log(err);
 
     return res.status(500).json({
+        ok: false,
         message: "Erro interno do servidor"
     });
 }

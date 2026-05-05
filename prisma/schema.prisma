@@ -39,7 +39,7 @@ model Tweet {
 
   //guarda o id do tweet pai referenciado
   replyId String? @map("reply_id") @db.Uuid
-  // tweet pai que este tweet está respondendo
+  // tweet pai que esta relacao está respondendo
   replyTo Tweet?  @relation("tweetReplies", fields: [replyId], references: [tweetId], onDelete: Cascade, onUpdate: Cascade)
 
   // apontando a relacao | replies representa uma lista de tweets "filhos"
