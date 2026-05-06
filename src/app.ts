@@ -6,6 +6,8 @@ import usuarioRouter from "./modules/routes/usuario.routes";
 import toggleLikeRouter from "./modules/routes/like.routes";
 import toggleFollowRouter from "./modules/routes/follow.routes";
 import loginRouter from "./modules/routes/auth.routes";
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./config/swagger";
 
 import cors from "cors";
 const app = express();
@@ -23,6 +25,7 @@ app.get("/", (req, res) => {
     res.send("API rodando!");
 });
 
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(handleError);
 
 export default app;
