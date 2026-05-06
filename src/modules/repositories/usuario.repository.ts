@@ -12,7 +12,7 @@ export class UsuarioRepository {
 
     }
 
-    public async obterPorEmail(email: string){
+    public async obterPorEmail(email: string) {
         return await prisma.usuario.findUnique({
             where: {
                 email
@@ -20,11 +20,24 @@ export class UsuarioRepository {
         });
     }
 
-    public async obterPorUsername(username: string){
+    public async obterPorUsername(username: string) {
         return await prisma.usuario.findUnique({
             where: {
                 username
             }
         })
+    }
+
+    public async obterUsuarioPorId(usuarioId: string) {
+        return await prisma.usuario.findUnique({
+            where: {
+                id: usuarioId
+            },
+            include: {
+                tweets: true,
+                follower: true,
+                likes: true
+            }
+        });
     }
 }

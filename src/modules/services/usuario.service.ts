@@ -1,3 +1,4 @@
+import { AppError } from "../../middlewares/error.handler";
 import { CreateUsuarioDto } from "../dtos/usuario.dto";
 import { UsuarioRepository } from "../repositories/usuario.repository";
 
@@ -19,17 +20,17 @@ export class UsuarioService {
         for (const campo of camposObrigatorios) {
             //buscando o valor pela lista
             if (!dados[campo])
-                throw new Error(`O campo ${campo} é obrigatório.`)
+                throw new AppError(`O campo ${campo} é obrigatório.`, 400);
 
             if (dados[campo] === null || dados[campo] === "") {
-                throw new Error(`O valor do campo ${campo} está vazio.`)
+                throw new AppError(`O valor do campo ${campo} está vazio.`, 400);
             }
         }
 
         const nomeInvalido = /[^a-zA-ZÀ-ÿ0-9\s]/g;
 
         if (nomeInvalido.test(dados.nome))
-            throw new Error("nome inválido.");
+            throw new AppError("Nome inválido.", 400);
 
         //padrozinacao
         dados.nome = dados.nome
@@ -59,7 +60,7 @@ export class UsuarioService {
 
         // validacao e-mail
         if (!emailValido.test(dados.email))
-            throw new Error(`E-mail inválido.`)
+            throw new AppError("E-mail inválido.", 400);
 
         //criando usuario
         const usuarioCriado = await usuarioRepository.createUsuario(dados);
@@ -71,5 +72,24 @@ export class UsuarioService {
             ok: true,
             usuario: usuarioSemSenha
         }
+    }
+
+    async obterUsuarioPorId(usuarioId: string) {
+
+        if (!usuarioId) {
+            throw new AppError("ID do usuário não encontrado.", 400);
+        }
+        const usuario = await usuarioRepository.obterUsuarioPorId(usuarioId);
+
+        if (!usuario) {
+            throw new AppError("Usuário não encontrado.", 404);
+        }
+
+        const { senha, ...usuarioSemSenha } = usuario;
+
+        return {
+            ok: true,
+            usuario: usuarioSemSenha
+        };
     }
 }
