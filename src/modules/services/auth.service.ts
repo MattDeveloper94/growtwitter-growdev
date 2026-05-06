@@ -7,16 +7,26 @@ const usuarioRepository = new UsuarioRepository();
 export class AuthService {
     async login(dados: LoginUsuarioDto) {
 
-        //validacao email
+        //validacoes
         const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const loginInvalido = /[^a-zA-Z0-9]/;
+        const isEmail = dados.login.includes("@");
+        let usuario;
 
         if (!dados.login || !dados.senha)
             throw new Error("Login e senha são obrigatórios.");
 
-        //operador ternário
-        const usuario = emailValido.test(dados.login)
-            ? await usuarioRepository.obterPorEmail(dados.login) // email
-            : await usuarioRepository.obterPorUsername(dados.login); // username
+        if (isEmail) {
+            if (!emailValido.test(dados.login))
+                throw new Error("E-mail inválido! O formato deve ser: email@email.com");
+
+            usuario = await usuarioRepository.obterPorEmail(dados.login) // email
+        } else {
+            if (loginInvalido.test(dados.login))
+                throw new Error("Username inválido. Utilize apenas letras e números.");
+
+            usuario = await usuarioRepository.obterPorUsername(dados.login); // username
+        }
 
         //validando usuario;
         if (!usuario)

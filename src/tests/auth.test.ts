@@ -83,38 +83,38 @@ function expectError401(response: any) {
   expect(typeof response.body.message).toBe("string");
 }
 
-describe("Fluxo completo, criacao de usuario, login com email, criacao de tweet com validacao do usuario com token", () => {
-  it("criar usuario, fazer login com email e criar tweet", async () => {
-    // *******************************************************************************************************
-    const timestamp = Date.now();
-    const userTest = {
-      nome: `Teste${timestamp}`,
-      username: `teste${timestamp}`,
-      email: `teste${timestamp}@email.com`,
-      senha: "123456",
-      dtNascimento: "2000-01-01"
-    };
+describe("Fluxo completo", () => {
+  const timestamp = Date.now();
+  const userTest = {
+    nome: `Teste${timestamp}`,
+    username: `teste${timestamp}`,
+    email: `teste${timestamp}@email.com`,
+    senha: "123456",
+    dtNascimento: "2000-01-01"
+  };
 
-    // criar usuario
+  it("criando usuário teste", async () => {
+    // criar usuário
     const createUser = await request(app)
       .post("/api/users")
       .send(userTest);
 
-    // validando criacao de usuario
+    // validando criacao de usuário
     expectCreateUser(createUser, userTest);
+  });
 
+  it("fluxo do usuário login → criar tweet → update e delete", async () => {
     // fazer login com email
     const login = await request(app)
       .post("/api/auth/login")
       .send({
-        login: userTest.email, //email
+        login: userTest.username, //email
         senha: userTest.senha
       });
 
     //validando login
     expectLogin(login, userTest);
 
-    // recebendo token
     const token = login.body.token;
 
     // criar tweet
@@ -122,60 +122,13 @@ describe("Fluxo completo, criacao de usuario, login com email, criacao de tweet 
       .post("/api/tweets")
       .set("Authorization", `Bearer ${token}`)
       .send({
-        conteudo: `foi com email!`
+        conteudo: `tweet com um token válido!`
       });
 
     //validando tweet criado
     expectCreateTweet(tweet);
-  });
-});
 
-// *******************************************************************************************************
-// *******************************************************************************************************
-
-describe("Fluxo completo, criacao de usuario, login com username, criacao de tweet com validacao do usuario com token", () => {
-  it("criar usuario, fazer login com username e criar tweet", async () => {
-    // *******************************************************************************************************
-    const timestamp = Date.now();
-    const userTest = {
-      nome: `Teste${timestamp}`,
-      username: `teste${timestamp}`,
-      email: `teste_${timestamp}@email.com`,
-      senha: "123456",
-      dtNascimento: "2010-10-10"
-    };
-
-    // criar usuario
-    const createUser = await request(app)
-      .post("/api/users")
-      .send(userTest);
-
-    expectCreateUser(createUser, userTest);
-
-    // fazer login com email
-    const login = await request(app)
-      .post("/api/auth/login")
-      .send({
-        login: userTest.username, //username 
-        senha: userTest.senha
-      });
-
-    expectLogin(login, userTest);
-
-    //recebendo token
-    const token = login.body.token;
-
-    // criar tweet
-    const tweet = await request(app)
-      .post("/api/tweets")
-      .set("Authorization", `Bearer ${token}`)
-      .send({
-        conteudo: `foi com username!`
-      });
-
-    expectCreateTweet(tweet);
-
-    // alterar tweet
+    // update do tweet
     const tweetId = tweet.body.tweet.tweetId;
 
     const tweetUpdate = await request(app)
@@ -187,13 +140,26 @@ describe("Fluxo completo, criacao de usuario, login com username, criacao de twe
 
     expectUpdateTweet(tweetUpdate);
 
+    //deletando tweet
+    const tweetDelete = await request(app)
+      .delete(`/api/tweets/${tweetId}`)
+      .set("Authorization", `Bearer ${token}`)
+
+    expect(tweetDelete.status).toBe(204);
+
+    // checando delete do tweet
+    const getTweet = await request(app)
+      .get(`/api/tweets/${tweetId}`)
+      .set("Authorization", `Bearer ${token}`)
+
+    expect(getTweet.status).toBe(404);
   });
 });
 
 // *******************************************************************************************************
 // *******************************************************************************************************
 
-describe("Autenticacao de usuario", () => {
+describe("Autenticação usuário", () => {
   const timestamp = Date.now();
   const userTest = {
     nome: `Teste${timestamp}`,
@@ -203,9 +169,324 @@ describe("Autenticacao de usuario", () => {
     dtNascimento: "2000-01-01"
   };
 
-  it("deve criar usuario, login: email ou username correto | senha: 'senha errada'", async () => {
-    // *******************************************************************************************************
-    // criar usuario
+  it("usuário com nome inválido - vazio", async () => {
+    const usuario = {
+      nome: ``,
+      username: `teste${timestamp}`,
+      email: `teste_${timestamp}@email.com`,
+      senha: "123456",
+      dtNascimento: "2000-01-01"
+    };
+
+    const nomeInvalido = await request(app)
+      .post("/api/users")
+      .send(usuario);
+
+    expectError400(nomeInvalido);
+  });
+
+  it("usuário com nome inválido - caracter especiais", async () => {
+    const usuario = {
+      nome: `m@theus`,
+      username: `teste${timestamp}`,
+      email: `teste_${timestamp}@email.com`,
+      senha: "123456",
+      dtNascimento: "2000-01-01"
+    };
+
+    const nomeInvalido = await request(app)
+      .post("/api/users")
+      .send(usuario);
+
+    expectError400(nomeInvalido);
+  });
+
+  it("usuário com username inválido - vazio", async () => {
+    const usuario = {
+      nome: `Teste${timestamp}`,
+      username: ``,
+      email: `teste_${timestamp}@email.com`,
+      senha: "123456",
+      dtNascimento: "2000-01-01"
+    };
+
+    const usernameInvalido = await request(app)
+      .post("/api/users")
+      .send(usuario);
+
+    expectError400(usernameInvalido);
+  });
+
+  it("usuário com username inválido - caracter especiais", async () => {
+    const usuario = {
+      nome: `Teste${timestamp}`,
+      username: `m@theus`,
+      email: `teste_${timestamp}@email.com`,
+      senha: "123456",
+      dtNascimento: "2000-01-01"
+    };
+
+    const username = await request(app)
+      .post("/api/users")
+      .send(usuario);
+
+    expectError400(username);
+  });
+
+  it("usuário com username repetido", async () => {
+    const userTest = {
+      nome: `Teste${timestamp}`,
+      username: `teste${timestamp}`,
+      email: `teste_${timestamp}@email.com`,
+      senha: "123456",
+      dtNascimento: "2000-01-01"
+    };
+
+    const usuario = await request(app)
+      .post("/api/users")
+      .send(userTest);
+
+    const usernameRepetido = await request(app)
+      .post("/api/users")
+      .send(usuario.body);
+
+    expectError400(usernameRepetido);
+  });
+
+  it("usuário com email inválido - vazio", async () => {
+    const usuario = {
+      nome: `Teste${timestamp}`,
+      username: `teste${timestamp}`,
+      email: ``,
+      senha: "123456",
+      dtNascimento: "2000-01-01"
+    };
+
+    const emailInvalido = await request(app)
+      .post("/api/users")
+      .send(usuario);
+
+    expectError400(emailInvalido);
+  });
+
+  it("usuário com email inválido - sem @", async () => {
+    const usuario = {
+      nome: `Teste${timestamp}`,
+      username: `teste${timestamp}`,
+      email: `test@ndo_${timestamp}email.com`,
+      senha: "123456",
+      dtNascimento: "2000-01-01"
+    };
+
+    const emailInvalido = await request(app)
+      .post("/api/users")
+      .send(usuario);
+
+    expectError400(emailInvalido);
+  });
+
+  it("usuário com email inválido - sem domínio", async () => {
+    const usuario = {
+      nome: `Teste${timestamp}`,
+      username: `teste${timestamp}`,
+      email: `test@ndo_${timestamp}@`,
+      senha: "123456",
+      dtNascimento: "2000-01-01"
+    };
+
+    const emailInvalido = await request(app)
+      .post("/api/users")
+      .send(usuario);
+
+    expectError400(emailInvalido);
+  });
+
+  it("usuário com email inválido - domínio com caracter especiais", async () => {
+    const usuario = {
+      nome: `Teste${timestamp}`,
+      username: `teste${timestamp}`,
+      email: `test@ndo_${timestamp}@em@il.com`,
+      senha: "123456",
+      dtNascimento: "2000-01-01"
+    };
+
+    const emailInvalido = await request(app)
+      .post("/api/users")
+      .send(usuario);
+
+    expectError400(emailInvalido);
+  });
+
+  it("usuário com email repetido", async () => {
+    const userTest = {
+      nome: `Teste${timestamp}`,
+      username: `teste${timestamp}`,
+      email: `teste_${timestamp}@email.com`,
+      senha: "123456",
+      dtNascimento: "2000-01-01"
+    };
+
+    const usuario = await request(app)
+      .post("/api/users")
+      .send(userTest);
+
+    const emailRepetido = await request(app)
+      .post("/api/users")
+      .send(usuario.body);
+
+    expectError400(emailRepetido);
+  });
+
+  it("usuário com senha inválida", async () => {
+    const usuario = {
+      nome: `Teste${timestamp}`,
+      username: `teste${timestamp}`,
+      email: `teste_${timestamp}@email.com`,
+      senha: "",
+      dtNascimento: "2000-01-01"
+    };
+
+    const senhaInvalida = await request(app)
+      .post("/api/users")
+      .send(usuario);
+
+    expectError400(senhaInvalida);
+  });
+
+  it("usuário com data nascimento inválida - alfabeto ", async () => {
+    const dataInvalida = await request(app)
+      .post("/api/users")
+      .send({
+        nome: "Teste",
+        username: "teste",
+        email: "teste@email.com",
+        senha: "123456",
+        dtNascimento: "abc"
+      });
+
+    expectError400(dataInvalida);
+  });
+
+  it("usuário com data nascimento inválida - ordem incorreta ", async () => {
+    const dataInvalida = await request(app)
+      .post("/api/users")
+      .send({
+        nome: "Teste",
+        username: "teste",
+        email: "teste@email.com",
+        senha: "123456",
+        dtNascimento: "18-10-2000"
+      });
+
+    expectError400(dataInvalida);
+  });
+
+  it("usuário com data nascimento inválida - ano incorreto ", async () => {
+    const dataInvalida = await request(app)
+      .post("/api/users")
+      .send({
+        nome: "Teste",
+        username: "teste",
+        email: "teste@email.com",
+        senha: "123456",
+        dtNascimento: "200-10-10"
+      });
+
+    expectError400(dataInvalida);
+  });
+
+  it("usuário com data nascimento inválida - mes incorreto ", async () => {
+    const dataInvalida = await request(app)
+      .post("/api/users")
+      .send({
+        nome: "Teste",
+        username: "teste",
+        email: "teste@email.com",
+        senha: "123456",
+        dtNascimento: "2000-13-10"
+      });
+
+    expectError400(dataInvalida);
+  });
+
+  it("usuário com data nascimento inválida - dia incorreto ", async () => {
+    const dataInvalida = await request(app)
+      .post("/api/users")
+      .send({
+        nome: "Teste",
+        username: "teste",
+        email: "teste@email.com",
+        senha: "123456",
+        dtNascimento: "2000-10-32"
+      });
+    expectError400(dataInvalida);
+  });
+
+  it("usuário com data nascimento inválida - ano incorreto ", async () => {
+    const dataInvalida = await request(app)
+      .post("/api/users")
+      .send({
+        nome: "Teste",
+        username: "teste",
+        email: "teste@email.com",
+        senha: "123456",
+        dtNascimento: ""
+      });
+
+    expectError400(dataInvalida);
+  });
+
+  it("usuário com data nascimento inválida - formato brasileiro ", async () => {
+    const dataInvalida = await request(app)
+      .post("/api/users")
+      .send({
+        nome: "Teste",
+        username: "teste",
+        email: "teste@email.com",
+        senha: "123456",
+        dtNascimento: "18-10-2000"
+      });
+    expectError400(dataInvalida);
+  });
+
+  it("não deve criar usuário sem campos obrigatórios", async () => {
+    const camposObrigatorios = [
+      "nome",
+      "username",
+      "email",
+      "senha",
+      "dtNascimento"
+    ];
+
+    for (const campo of camposObrigatorios) {
+      const usuario = {
+        nome: "Teste",
+        username: "teste",
+        email: "teste@email.com",
+        senha: "123456",
+        dtNascimento: "2000-01-01"
+      };
+
+      delete usuario[campo as keyof typeof usuario]; // deleta um campo como uma chave do tipo do objeto usuario
+
+      const testeUsuario = await request(app)
+        .post("/api/users")
+        .send(usuario);
+
+      expectError400(testeUsuario);
+    }
+  });
+
+  it("login: email ou username + senha: 'incorreta'", async () => {
+    const timestamp = Date.now();
+    const userTest = {
+      nome: `Teste${timestamp}`,
+      username: `teste${timestamp}`,
+      email: `teste${timestamp}@email.com`,
+      senha: "123456",
+      dtNascimento: "2000-01-01"
+    };
+    // criar usuário
     const createUser = await request(app)
       .post("/api/users")
       .send(userTest);
@@ -216,8 +497,8 @@ describe("Autenticacao de usuario", () => {
     const loginEmail = await request(app)
       .post("/api/auth/login")
       .send({
-        login: userTest.email,
-        senha: "errada"
+        login: userTest.email, // email
+        senha: "incorreta"
       });
 
     expectError400(loginEmail);
@@ -226,12 +507,27 @@ describe("Autenticacao de usuario", () => {
     const loginUsername = await request(app)
       .post("/api/auth/login")
       .send({
-        login: userTest.username,
-        senha: "errada"
+        login: userTest.username, //username++
+        senha: "incorreta"
       });
 
     expectError400(loginUsername);
+  });
+});
 
+// // *******************************************************************************************************
+// // *******************************************************************************************************
+
+describe("Autenticação Tweet", () => {
+  it("tenta criar um tweet sem um token válido.", async () => {
+    const timestamp = Date.now();
+    const userTest = {
+      nome: `Teste${timestamp}`,
+      username: `teste${timestamp}`,
+      email: `teste_${timestamp}@email.com`,
+      senha: "123456",
+      dtNascimento: "2000-01-01"
+    };
     // tenta criar um tweet sem token válido
     const tweetSemToken = await request(app)
       .post("/api/tweets")
@@ -240,37 +536,9 @@ describe("Autenticacao de usuario", () => {
       });
 
     expectError401(tweetSemToken);
-
-    // fazendo login do usuario com dados válidos
-    const loginResponse = await request(app)
-      .post("/api/auth/login")
-      .send({
-        login: userTest.email,
-        senha: userTest.senha
-      });
-
-    expectLogin(loginResponse, userTest);
-
-    // recebendo token do body
-    const token = loginResponse.body.token;
-
-    // tenta criar um tweet com token válido
-    const tweetToken = await request(app)
-      .post("/api/tweets")
-      .set("Authorization", `Bearer ${token}`)
-      .send({
-        conteudo: "Tweetando com token válido!"
-      });
-
-    expectCreateTweet(tweetToken);
   });
-});
 
-// // *******************************************************************************************************
-// // *******************************************************************************************************
-
-describe("Autenticacao de Tweets", () => {
-  it("cria usuario teste, faz login, recebe token valido e deve rejeitar um tweet vazio", async () => {
+  it("fluxo do usuário → válidar: tweet vazio e válidar: tweet maior que 280 caracteres.", async () => {
     const timestamp = Date.now();
     const userTest = {
       nome: `Teste${timestamp}`,
@@ -280,25 +548,26 @@ describe("Autenticacao de Tweets", () => {
       dtNascimento: "2000-01-01"
     };
 
-    // criar usuario
+    // criar usuário
     const createUser = await request(app)
       .post("/api/users")
       .send(userTest);
 
     expectCreateUser(createUser, userTest);
 
+
     //login
-    const login = await request(app)
+    const loginEmail = await request(app)
       .post("/api/auth/login")
       .send({
-        login: userTest.email,
+        login: createUser.body.usuario.email,
         senha: userTest.senha
       });
 
-    expectLogin(login, userTest);
+    expectLogin(loginEmail, userTest);
 
     //token válido recebido
-    const token = login.body.token;
+    const token = loginEmail.body.token;
 
     const tweetEmpty = await request(app)
       .post("/api/tweets")
@@ -306,39 +575,8 @@ describe("Autenticacao de Tweets", () => {
       .send({
         conteudo: ""
       });
-
+      
     expectError400(tweetEmpty);
-  });
-
-  it("criar usuario, fazer login, gerar token valido, validar tweets maior que 280 caracteres", async () => {
-    const timestamp = Date.now();
-    const userTest = {
-      nome: `Teste${timestamp}`,
-      username: `teste${timestamp}`,
-      email: `teste_${timestamp}@email.com`,
-      senha: "123456",
-      dtNascimento: "2000-01-01"
-    };
-
-    // criar usuario
-    const createUser = await request(app)
-      .post("/api/users")
-      .send(userTest);
-
-    expectCreateUser(createUser, userTest);
-
-    //login
-    const login = await request(app)
-      .post("/api/auth/login")
-      .send({
-        login: userTest.email,
-        senha: userTest.senha
-      });
-
-    expectLogin(login, userTest);
-
-    //token válido recebido
-    const token = login.body.token;
 
     // tweetando com 281 caracteres
     const tweetContentTooLong = await request(app)
@@ -350,11 +588,11 @@ describe("Autenticacao de Tweets", () => {
 
     expectError400(tweetContentTooLong);
   });
-});
-// // *******************************************************************************************************
-// // *******************************************************************************************************
+  // // *******************************************************************************************************
+  // // *******************************************************************************************************
 
-afterAll(async () => {
-  await prisma.$disconnect();
-  await pool.end();
+  afterAll(async () => {
+    await prisma.$disconnect();
+    await pool.end();
+  });
 });

@@ -1,5 +1,4 @@
 import { prisma } from "../../database/prismadb";
-import { LoginUsuarioDto } from "../dtos/auth.dto";
 import { CreateUsuarioDto } from "../dtos/usuario.dto";
 
 export class UsuarioRepository {

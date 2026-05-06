@@ -26,9 +26,13 @@ export class UsuarioService {
             }
         }
 
+        const nomeInvalido = /[^a-zA-ZÀ-ÿ0-9\s]/g;
+
+        if (nomeInvalido.test(dados.nome))
+            throw new Error("nome inválido.");
+
         //padrozinacao
         dados.nome = dados.nome
-            .replace(/[^a-zA-ZÀ-ÿ0-9\s]/g, "")
             .trim()
             .toLowerCase()
             .split(" ")
@@ -41,7 +45,6 @@ export class UsuarioService {
             .join(" ");
 
         dados.username = dados.username
-            .replace(/[^a-zA-ZÀ-ÿ0-9\s]/g, "")
             .trim()
             .toLowerCase()
             .split(" ")
