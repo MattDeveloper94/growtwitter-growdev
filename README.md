@@ -6,16 +6,16 @@ Aplicação inspirada no Twitter desenvolvida durante o curso de Formação em D
 
 ## 🚀 Tecnologias
 
--     Node.js
--     TypeScript
--     Express
--     API REST
--     Programação Orientada a Objetos (POO)
--     PostgreSQL
--     Prisma ORM
--     Docker
--     JWT Authentication
--     Testes automatizados com Jest e Supertest
+- Node.js
+- TypeScript
+- Express
+- API REST
+- Programação Orientada a Objetos (POO)
+- PostgreSQL
+- Prisma ORM
+- Docker
+- JWT Authentication
+- Testes automatizados com Jest e Supertest
 
 ---
 
@@ -23,26 +23,37 @@ Aplicação inspirada no Twitter desenvolvida durante o curso de Formação em D
 
 A aplicação utiliza JWT (JSON Web Token) para autenticação e proteção de rotas.
 
-🔑 Como funciona
--     1. O usuário realiza login pela rota de autenticação.
--     2. O backend valida as credenciais.
--     3. O backend gera um JWT contendo o id do usuário.
--     4. O token retornado deve ser copiado no Postman.
--     5. Nas rotas protegidas, o token deve ser enviado no header: Authorization: Bearer TOKEN
--     6. O middleware valida o token e libera o acesso à rota.
+---
+
+### 🔑 Como funciona
+
+1. O usuário realiza login pela rota de autenticação
+2. O backend valida as credenciais
+3. O backend gera um JWT contendo o ID do usuário
+4. O token retornado deve ser utilizado nas rotas protegidas
+5. O middleware valida o token e libera o acesso à rota
+
+---
+
+### 🔒 Header Authorization
+
+```http
+Authorization: Bearer TOKEN
+```
 
 ---
 
 ## 🛡️ Segurança
 
-- O backend identifica o usuário através do token
-- Validação de permissão para:
+### O backend identifica o usuário através do token
+### Validação de permissão para:
 -     editar tweets ✅ concluído
 -     deletar tweets ✅ concluído
 -     seguir/deixar de seguir usuários ✅ concluído
 -     reply tweets ✅ concluído
--     comentar tweets ⏳ em desenvolvimento
 -     curtidas de usuários ✅ concluído
+-     proteção de rotas privadas ✅ concluído
+-     validação de permissão de usuário ✅
 
 ---
 
@@ -54,7 +65,6 @@ A aplicação utiliza JWT (JSON Web Token) para autenticação e proteção de r
 -     Atualizar tweet ✅ concluído
 -     Deletar tweet ✅ concluído
 -     Reply tweet ✅ concluído
--     Comentar tweet ⏳ em desenvolvimento
 -     Like tweet ✅ concluído
 -     Follow/Unfollow ✅ concluído
 -     Autenticação com JWT ✅ concluído
@@ -73,27 +83,44 @@ Para rodar os testes:
 npm test
 ```
 
+### ✔️ Cobertura atual
+- criação de usuário
+- login com email e username
+- autenticação JWT
+- criação de tweets
+- update de tweets
+- delete de tweets
+- validação de tweet vazio
+- validação de tweet > 280 caracteres
+- reply em tweets
+- like / unlike
+- follow / unfollow
+- usuário seguindo a si mesmo
+- atualização de tweet de outro usuário
+- deleção de tweet de outro usuário
+
 ---
 
 ## 🚀 Rotas principais
 
   🔐 Autenticação
-POST /auth/login
+POST /api/auth/login
 
   👤 Usuários
-POST /users
+POST /api/users
 
   📝 Tweets
-POST   /tweets
-PUT    /tweets/:id
-DELETE /tweets/:id
-GET    /tweets
+POST   /api/tweets
+PUT    /api/tweets/:id
+DELETE /api/tweets/:id
+GET    /api/tweets
 
   ❤️ Likes
-POST /likes/:id
+POST /api/likes/:id
 
   🤝 Follow
-POST /follows/:id
+POST /api/follows/:id
+DELETE /api/follows/:id
 
 ---
 
@@ -127,6 +154,7 @@ Depois preencha:
 ```env
 DATABASE_URL="sua_url_do_postgresql"
 JWT_SECRET="seu_segredo"
+PORT=3000
 ```
 
 ---
@@ -191,7 +219,7 @@ Utilize o Postman ou outra ferramenta para testar as rotas.
 
 POST /api/auth/login
 
-Após o login, copie o token retornado.
+Após o login, copie o token JWT retornado.
 
 #### 🔒 Rotas protegidas
 
@@ -199,8 +227,20 @@ Envie o token no header:
 
 Authorization: Bearer TOKEN
 
+### 📁 Estrutura do projeto
 
-**Windows:**
+src/
+├── database
+├── middlewares
+├── modules
+│   ├── controllers
+│   ├── dtos
+│   ├── repositories
+│   ├── routes
+│   └── services
+├── tests
 
-* copie o arquivo `.env.example`
-* renomeie para `.env`
+
+📌 Status do projeto
+
+🚧 Projeto em evolução contínua para estudos de backend, testes automatizados, autenticação e arquitetura de APIs REST.
