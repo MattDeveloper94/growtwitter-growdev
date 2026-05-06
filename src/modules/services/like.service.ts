@@ -17,7 +17,8 @@ export class LikeService {
 
             return {
                 ok: true,
-                deleteLike
+                deleteLike,
+                action: "removed"
             }
         }
 
@@ -25,7 +26,8 @@ export class LikeService {
 
         return {
             ok: true,
-            createLike
+            createLike,
+            action: "created"
         }
     }
 }

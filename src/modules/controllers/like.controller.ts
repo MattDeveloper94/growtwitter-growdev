@@ -13,6 +13,10 @@ export class LikeController {
             throw new Error('ID não recebido!');
 
         const result = await likeService.toggleLike(usuarioId, tweetId);
-        return res.json(result);
+
+        if (result.action === "created")
+            return res.status(201).json(result);
+        else
+            return res.status(200).json(result);
     }
 }
