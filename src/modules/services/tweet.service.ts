@@ -1,104 +1,121 @@
-import { CreateTweetDto, UpdateTweetDto } from "../dtos/tweet.dto"
-import { TweetRepository } from "../repositories/tweet.repository"
+import { CreateTweetDto, UpdateTweetDto } from "../dtos/tweet.dto";
+import { TweetRepository } from "../repositories/tweet.repository";
+import { AppError } from "../../middlewares/error.handler";
 
 const tweetRepository = new TweetRepository();
 
 export class TweeetService {
-    async createTweet(dados: CreateTweetDto) {
-        //tratamento de dados
-        if (dados.conteudo) {
-            dados.conteudo = dados.conteudo.trim()
-                .split("\n")
-                .map(linha => linha.trim())
-                .join("\n")
-        } else {
-            "";
-        }
-
-        //validacao
-        if (!dados.conteudo)
-            throw new Error("O tweet não pode estar vazio.");
-
-        if (dados.conteudo.length > 280)
-            throw new Error("Você pode usar apenas 280 caracteres.");
-
-        //criando o tweet
-        const tweetCriado = await tweetRepository.CreateTweet(dados);
-
-        return {
-            ok: true,
-            tweet: tweetCriado
-        }
+  async createTweet(dados: CreateTweetDto) {
+    if (dados.conteudo) {
+      dados.conteudo = dados.conteudo
+        .trim()
+        .split("\n")
+        .map(linha => linha.trim())
+        .join("\n");
     }
 
-    async deleteTweet(usuarioLogadoId: string, tweetId: string) {
-        const tweet = await this.obterPorId(tweetId);
-
-        if (!tweet)
-            throw new Error('Tweet nao encontrado!');
-
-        if (tweet.tweetObtido?.usuarioId !== usuarioLogadoId)
-            throw new Error('Você nao tem permissao para deletar esse tweet!');
-
-        //deletando tweet
-        const tweetDeletado = await tweetRepository.deletarTweetPorId(tweetId);
-
-        return {
-            ok: true,
-            tweet: tweetDeletado
-        }
+    if (!dados.conteudo) {
+      throw new AppError("O tweet não pode estar vazio.", 400);
     }
 
-    async updateTweet(usuarioLogadoId: string, tweetId: string, dados: UpdateTweetDto) {
-        const tweet = await this.obterPorId(tweetId);
-
-        if (!tweet)
-            throw new Error('Tweet nao encontrado!');
-
-        if (tweet.tweetObtido?.usuarioId != usuarioLogadoId)
-            throw new Error('Você nao tem permissao para atualizar esse tweet!');
-
-        if (dados.conteudo !== undefined) {
-            dados.conteudo = dados.conteudo
-                .trim()
-                .split("\n")
-                .map(linha => linha.trim())
-                .join("\n")
-
-            if (dados.conteudo.length > 280)
-                throw new Error("Você pode tweetar usando apenas 280 caracteres.");
-
-
-            if (!dados.conteudo)
-                throw new Error("O tweet não pode estar vazio.");
-        }
-
-        const tweetAtualizado = await tweetRepository.updateTweet(tweetId, dados)
-
-        return {
-            ok: true,
-            tweetAtualizado
-        }
+    if (dados.conteudo.length > 280) {
+      throw new AppError("Você pode usar apenas 280 caracteres.", 400);
     }
 
-    async obterPorId(tweetId: string) {
-        if (!tweetId)
-            throw new Error('TweetID nao encontrado!');
+    const tweetCriado = await tweetRepository.CreateTweet(dados);
 
-        const tweetObtido = await tweetRepository.obterPorId(tweetId)
+    return {
+      ok: true,
+      tweet: tweetCriado
+    };
+  }
 
-        return {
-            ok: true,
-            tweetObtido
-        }
+  async deleteTweet(usuarioLogadoId: string, tweetId: string) {
+    const tweet = await this.obterPorId(tweetId);
+
+    if (!tweet.tweetObtido) {
+      throw new AppError("Tweet não encontrado!", 404);
     }
 
-    async listarTodosTweets(usuarioLogado: string) {
-        const tweetsObtidos = await tweetRepository.listarTodosTweets(usuarioLogado)
-
-        return {
-            ok: true,
-            tweetsObtidos
-        }
+    if (tweet.tweetObtido.usuarioId !== usuarioLogadoId) {
+      throw new AppError(
+        "Você não tem permissão para deletar esse tweet!",
+        403
+      );
     }
+
+    const tweetDeletado = await tweetRepository.deletarTweetPorId(tweetId);
+
+    return {
+      ok: true,
+      tweet: tweetDeletado
+    };
+  }
+
+  async updateTweet(
+    usuarioLogadoId: string,
+    tweetId: string,
+    dados: UpdateTweetDto
+  ) {
+    const tweet = await this.obterPorId(tweetId);
+
+    if (!tweet.tweetObtido) {
+      throw new AppError("Tweet não encontrado!", 404);
+    }
+
+    if (tweet.tweetObtido.usuarioId !== usuarioLogadoId) {
+      throw new AppError(
+        "Você não tem permissão para atualizar esse tweet!",
+        403
+      );
+    }
+
+    if (dados.conteudo !== undefined) {
+      dados.conteudo = dados.conteudo
+        .trim()
+        .split("\n")
+        .map(linha => linha.trim())
+        .join("\n");
+
+      if (!dados.conteudo) {
+        throw new AppError("O tweet não pode estar vazio.", 400);
+      }
+
+      if (dados.conteudo.length > 280) {
+        throw new AppError(
+          "Você pode tweetar usando apenas 280 caracteres.",
+          400
+        );
+      }
+    }
+
+    const tweetAtualizado = await tweetRepository.updateTweet(tweetId, dados);
+
+    return {
+      ok: true,
+      tweetAtualizado
+    };
+  }
+
+  async obterPorId(tweetId: string) {
+    if (!tweetId) {
+      throw new AppError("TweetID não encontrado!", 400);
+    }
+
+    const tweetObtido = await tweetRepository.obterPorId(tweetId);
+
+    return {
+      ok: true,
+      tweetObtido
+    };
+  }
+
+  async listarTodosTweets(usuarioLogado: string) {
+    const tweetsObtidos = await tweetRepository.listarTodosTweets(usuarioLogado);
+
+    return {
+      ok: true,
+      tweetsObtidos
+    };
+  }
 }

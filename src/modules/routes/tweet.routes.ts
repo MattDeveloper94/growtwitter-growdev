@@ -10,7 +10,7 @@ router.post("/tweets", authMiddleware, async (req: Request, res: Response) => {
     try {
         await tweetController.create(req, res)
     } catch (error: any) {
-        return res.status(400).send({
+        return res.status(error.statusCode || 400).send({
             ok: false,
             message: error.message
         });
@@ -21,7 +21,7 @@ router.put("/tweets/:id", authMiddleware, async (req: Request<{ id: string }>, r
     try {
         await tweetController.updateTweet(req, res)
     } catch (error: any) {
-        res.status(400).send({
+        return res.status(error.statusCode || 400).send({
             ok: false,
             message: error.message
         });
@@ -32,7 +32,7 @@ router.delete("/tweets/:id", authMiddleware, async (req: Request<{ id: string }>
     try {
         await tweetController.deleteTweet(req, res)
     } catch (error: any) {
-        res.status(400).send({
+        return res.status(error.statusCode || 400).send({
             ok: false,
             message: error.message
         });
@@ -43,7 +43,7 @@ router.get("/listar/tweets", authMiddleware, async (req: Request<{ id: string }>
     try {
         await tweetController.listarTweets(req, res)
     } catch (error: any) {
-        res.status(400).send({
+        return res.status(error.statusCode || 400).send({
             ok: false,
             message: error.message
         });

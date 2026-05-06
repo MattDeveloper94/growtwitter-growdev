@@ -12,7 +12,15 @@ export class FollowController {
         if (!followingId)
             throw new Error('ID nao recebido!');
 
+        if (followerId === followingId) {
+            throw new Error("Você não pode seguir a si mesmo.");
+        }
+
         const result = await followService.toggleFollow(followerId, followingId);
-        return res.json(result);
+
+        if (result.action === "created")
+            return res.status(201).json(result);
+        else
+            return res.status(200).json(result);
     }
 }

@@ -10,11 +10,10 @@ router.post("/likes/:id", authMiddleware, async (req: Request<{ id: string }>, r
     try {
         await likeController.toggleLike(req, res)
     } catch (error: any) {
-        res.status(400).send({
+        return res.status(error.statusCode || 400).send({
             ok: false,
             message: error.message
         });
-        return;
     }
 });
 

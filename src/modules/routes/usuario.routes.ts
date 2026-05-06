@@ -9,7 +9,7 @@ router.post("/users", async (req, res) => {
     try {
         await usuarioController.create(req, res)
     } catch (error: any) {
-        return res.status(400).send({
+        return res.status(error.statusCode || 400).send({
             ok: false,
             message: error.message
         });

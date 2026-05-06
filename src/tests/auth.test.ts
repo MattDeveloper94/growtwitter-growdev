@@ -83,6 +83,13 @@ function expectError401(response: any) {
   expect(typeof response.body.message).toBe("string");
 }
 
+function expectError403(response: any) {
+  expect(response.status).toBe(403);
+  expect(response.body.ok).toBe(false);
+  expect(response.body).toHaveProperty("message");
+  expect(typeof response.body.message).toBe("string");
+}
+
 describe("Fluxo completo", () => {
   let token: string;
 
@@ -609,6 +616,137 @@ describe("Autenticação Tweet", () => {
     });
   });
 });
+
+// // *******************************************************************************************************
+// // *******************************************************************************************************
+
+describe("Autorização e Follow", () => {
+  let tokenUsuarioA: string;
+  let tokenUsuarioB: string;
+  let usuarioA: any;
+  let usuarioB: any;
+  let tweetUsuarioA: any;
+
+  beforeAll(async () => {
+    usuarioA = {
+      nome: "Teste A",
+      username: "testea",
+      email: "testea@email.com",
+      senha: "123456",
+      dtNascimento: "2000-01-01"
+    };
+
+    usuarioB = {
+      nome: "Teste B",
+      username: "testeb",
+      email: "testeb@email.com",
+      senha: "123456",
+      dtNascimento: "2000-01-01"
+    };
+
+    const criarUsuarioA = await request(app)
+      .post("/api/users")
+      .send(usuarioA);
+
+    const criarUsuarioB = await request(app)
+      .post("/api/users")
+      .send(usuarioB);
+
+    expectCreateUser(criarUsuarioA, usuarioA);
+    expectCreateUser(criarUsuarioB, usuarioB);
+
+    usuarioA.id = criarUsuarioA.body.usuario.id;
+    usuarioB.id = criarUsuarioB.body.usuario.id;
+
+    const loginA = await request(app)
+      .post("/api/auth/login")
+      .send({
+        login: usuarioA.email,
+        senha: usuarioA.senha
+      });
+
+    const loginB = await request(app)
+      .post("/api/auth/login")
+      .send({
+        login: usuarioB.email,
+        senha: usuarioB.senha
+      });
+
+    expectLogin(loginA, usuarioA);
+    expectLogin(loginB, usuarioB);
+
+    tokenUsuarioA = loginA.body.token;
+    tokenUsuarioB = loginB.body.token;
+
+    // criando twwet para testar se usuarioB consegue alterar
+    tweetUsuarioA = await request(app)
+      .post("/api/tweets")
+      .set("Authorization", `Bearer ${tokenUsuarioA}`)
+      .send({
+        conteudo: "Tweet do usuário A"
+      });
+
+    expectCreateTweet(tweetUsuarioA);
+  });
+
+  it("usuário deve seguir outro usuário", async () => {
+    const follow = await request(app)
+      .post(`/api/follows/${usuarioB.id}`)
+      .set("Authorization", `Bearer ${tokenUsuarioA}`);
+
+    expect(follow.status).toBe(201);
+    expect(follow.body.ok).toBe(true);
+    expect(follow.body).toHaveProperty("action");
+  });
+
+  it("usuário deve deixar de seguir outro usuário", async () => {
+    const unfollow = await request(app)
+      .post(`/api/follows/${usuarioB.id}`)
+      .set("Authorization", `Bearer ${tokenUsuarioA}`);
+
+    expect(unfollow.status).toBe(200);
+    expect(unfollow.body.ok).toBe(true);
+    expect(unfollow.body).toHaveProperty("action");
+  });
+
+  it("usuário não pode seguir a si mesmo", async () => {
+    const meSeguir = await request(app)
+      .post(`/api/follows/${usuarioA.id}`)
+      .set("Authorization", `Bearer ${tokenUsuarioA}`);
+
+    expectError400(meSeguir);
+  });
+
+  it("usuárioB não deve atualizar tweet do usuárioA", async () => {
+    const updateTweet = await request(app)
+      .put(`/api/tweets/${tweetUsuarioA.body.tweet.tweetId}`)
+      .set("Authorization", `Bearer ${tokenUsuarioB}`)
+      .send({
+        conteudo: "Tentando alterar tweet de outro usuário"
+      });
+
+    expectError403(updateTweet);
+  });
+
+  it("usuárioB não pode deletar tweet outro usuárioA", async () => {
+    const deleteTweet = await request(app)
+      .delete(`/api/tweets/${tweetUsuarioA.body.tweet.tweetId}`)
+      .set("Authorization", `Bearer ${tokenUsuarioB}`);
+
+    expectError403(deleteTweet);
+  });
+
+  afterAll(async () => {
+    await prisma.usuario.deleteMany({
+      where: {
+        email: {
+          in: [usuarioA.email, usuarioB.email]
+        }
+      }
+    });
+  });
+});
+
 // // *******************************************************************************************************
 // // *******************************************************************************************************
 

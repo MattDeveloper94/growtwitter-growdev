@@ -17,7 +17,8 @@ export class FollowService {
 
             return {
                 ok: true,
-                deleteFollow
+                deleteFollow,
+                action: "removed"
             }
         }
 
@@ -25,7 +26,8 @@ export class FollowService {
 
         return {
             ok: true,
-            createFollow
+            createFollow,
+            action: "created"
         }
 
     }
