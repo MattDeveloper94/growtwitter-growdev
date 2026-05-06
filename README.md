@@ -103,24 +103,26 @@ npm test
 
 ## 🚀 Rotas principais
 
-  🔐 Autenticação
-POST /api/auth/login
+```txt
+🔐 Autenticação
+POST   /api/auth/login
 
-  👤 Usuários
-POST /api/users
+👤 Usuários
+POST   /api/users
 
-  📝 Tweets
+📝 Tweets
 POST   /api/tweets
 PUT    /api/tweets/:id
 DELETE /api/tweets/:id
 GET    /api/tweets
 
-  ❤️ Likes
-POST /api/likes/:id
+❤️ Likes
+POST   /api/likes/:id
 
-  🤝 Follow
-POST /api/follows/:id
+🤝 Follow
+POST   /api/follows/:id
 DELETE /api/follows/:id
+```
 
 ---
 
