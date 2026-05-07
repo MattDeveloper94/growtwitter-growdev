@@ -103,24 +103,54 @@ npm test
 
 ## 🚀 Rotas principais
 
-  🔐 Autenticação
-POST /api/auth/login
+```txt
+🔐 Autenticação
+POST   /api/auth/login
 
-  👤 Usuários
-POST /api/users
+👤 Usuários
+POST   /api/users
 
-  📝 Tweets
+📝 Tweets
 POST   /api/tweets
 PUT    /api/tweets/:id
 DELETE /api/tweets/:id
 GET    /api/tweets
 
-  ❤️ Likes
-POST /api/likes/:id
+❤️ Likes
+POST   /api/likes/:id
 
-  🤝 Follow
-POST /api/follows/:id
+🤝 Follow
+POST   /api/follows/:id
 DELETE /api/follows/:id
+```
+
+---
+
+# 📚 Documentação da API
+
+A documentação da API foi criada utilizando Swagger.
+
+Após iniciar o projeto, acesse:
+
+## Ambiente local
+
+```bash
+http://localhost:3000/api-docs
+```
+
+## Produção (Render)
+
+```bash
+https://growtwitter-growdev.onrender.com
+```
+
+A documentação permite visualizar todas as rotas da API, incluindo:
+
+- Autenticação
+- Usuários
+- Tweets
+- Likes
+- Follows
 
 ---
 
@@ -215,20 +245,23 @@ docker compose down
 
 Utilize o Postman ou outra ferramenta para testar as rotas.
 
-#### 🔐 Login
+## 🔐 Login
 
 POST /api/auth/login
 
 Após o login, copie o token JWT retornado.
 
-#### 🔒 Rotas protegidas
+## 🔒 Rotas protegidas
 
 Envie o token no header:
 
 Authorization: Bearer TOKEN
 
+---
+
 ### 📁 Estrutura do projeto
 
+```txt
 src/
 ├── database
 ├── middlewares
@@ -238,8 +271,8 @@ src/
 │   ├── repositories
 │   ├── routes
 │   └── services
-├── tests
-
+└── tests
+```
 
 📌 Status do projeto
 
