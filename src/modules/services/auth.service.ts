@@ -1,5 +1,7 @@
 import { UsuarioRepository } from "../repositories/usuario.repository";
 import { LoginUsuarioDto } from "../dtos/auth.dto";
+import { compareSync } from "bcryptjs";
+
 import jwt from "jsonwebtoken";
 
 const usuarioRepository = new UsuarioRepository();
@@ -32,7 +34,8 @@ export class AuthService {
         if (!usuario)
             throw new Error('Você precisa informar o usuario no campo login!');
 
-        if (usuario.senha !== dados.senha)
+        const senhaCorreta = compareSync(dados.senha, usuario.senha);
+        if (!senhaCorreta)
             throw new Error('Login ou senha inválidos!');
 
         //CRIANDO TOKEN - JWT

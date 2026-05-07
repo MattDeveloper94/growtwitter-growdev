@@ -62,7 +62,7 @@ export class UsuarioService {
         if (!emailValido.test(dados.email))
             throw new AppError("E-mail inválido.", 400);
 
-        //criando usuario
+                //criando usuario
         const usuarioCriado = await usuarioRepository.createUsuario(dados);
 
         //removendo senha do usuario pra log

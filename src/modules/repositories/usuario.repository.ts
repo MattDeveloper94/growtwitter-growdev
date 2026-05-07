@@ -1,11 +1,14 @@
 import { prisma } from "../../database/prismadb";
 import { CreateUsuarioDto } from "../dtos/usuario.dto";
+import { hashSync } from "bcryptjs";
 
 export class UsuarioRepository {
     public async createUsuario(dados: CreateUsuarioDto) {
+        const hashPassword = hashSync(dados.senha, 8)
         return await prisma.usuario.create({
             data: {
                 ...dados,
+                senha: hashPassword,
                 dtNascimento: new Date(dados.dtNascimento)
             }
         });
